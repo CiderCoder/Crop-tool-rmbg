@@ -492,11 +492,11 @@ function updateBgSwatchUI() {
   document.getElementById('bgHex').textContent = hex.toUpperCase();
 }
 
-// Recompute thresh when manual bg color changes
+// Recompute thresh when manual bg color changes - uses same histogram valley method
 function detectBgColorForThresh() {
   if (!img) return;
   const W = img.naturalWidth, H = img.naturalHeight;
-  const SAMP = Math.min(W, H, 400);
+  const SAMP = Math.min(W, H, 600);
   const ssc  = SAMP / Math.max(W, H);
   const sW = Math.round(W*ssc), sH = Math.round(H*ssc);
   const off = document.createElement('canvas');
@@ -505,20 +505,32 @@ function detectBgColorForThresh() {
   c2.drawImage(img,0,0,sW,sH);
   const data = c2.getImageData(0,0,sW,sH).data;
   const bg = getBgColor();
-  const SKIP = Math.round(Math.min(sW,sH)*0.08);
-  let minFgDist2 = Infinity;
-  for (let y=SKIP;y<sH-SKIP;y+=4) {
-    for (let x=SKIP;x<sW-SKIP;x+=4) {
-      const p=(y*sW+x)*4;
-      if (data[p+3]<128) continue;
-      const dr=data[p]-bg.r, dg=data[p+1]-bg.g, db=data[p+2]-bg.b;
-      const d2=dr*dr+dg*dg+db*db;
-      if (d2<minFgDist2) minFgDist2=d2;
-    }
+
+  const BINS=200, MAX_DIST=200;
+  const hist = new Float32Array(BINS);
+  for (let i=0;i<sW*sH;i++) {
+    const p=i*4; if (data[p+3]<128) continue;
+    const dr=data[p]-bg.r, dg=data[p+1]-bg.g, db=data[p+2]-bg.b;
+    const d=Math.sqrt(dr*dr+dg*dg+db*db);
+    hist[Math.min(BINS-1,Math.floor(d/MAX_DIST*BINS))]++;
   }
-  const minFgDist = Math.sqrt(minFgDist2);
-  autoThresh = Math.round(Math.max(18, Math.min(minFgDist*0.45, 70)));
-  document.getElementById('bgAutoThresh').textContent = `自動容差 ${autoThresh}`;
+  const sm=new Float32Array(BINS);
+  for (let i=0;i<BINS;i++) {
+    let s=0,w=0;
+    for (let j=Math.max(0,i-4);j<=Math.min(BINS-1,i+4);j++) {
+      const g=Math.exp(-0.5*((i-j)*(i-j))/4); s+=hist[j]*g; w+=g;
+    }
+    sm[i]=s/w;
+  }
+  let bgPeak=0;
+  for (let i=1;i<50;i++) if (sm[i]>sm[bgPeak]) bgPeak=i;
+  let valley=bgPeak;
+  for (let i=bgPeak+1;i<Math.min(bgPeak+80,BINS-1);i++) {
+    if (sm[i]<sm[i-1]&&sm[i]<sm[i+1]){valley=i;break;}
+  }
+  const valleyDist=(valley+0.5)/BINS*MAX_DIST;
+  autoThresh=Math.max(5,Math.min(60,Math.round(valleyDist)));
+  document.getElementById('bgAutoThresh').textContent=`自動容差 ${autoThresh}`;
 }
 
 // Color picker on swatch click
@@ -851,6 +863,14 @@ function openLb(i) {
 function closeLb() { document.getElementById('lb').classList.remove('on'); }
 
 // ─── Auto-detect + bg removal ─────────────────────────────────────────────────
+/*
+  Algorithm (v3 - full-res projection, no INSET):
+  1. Build fg mask at FULL resolution using histogram-valley threshold
+  2. Row projection on full-res mask → find row segments (content bands)
+  3. Per-row column projection → find cut positions via local minimum search
+     No INSET on any edge — use exact gap centers
+  4. Crop each cell, apply bg removal + auto-trim
+*/
 async function autoDetect() {
   if (!img) return;
   const btn = document.getElementById('btnAuto');
@@ -860,138 +880,116 @@ async function autoDetect() {
 
   try {
     const W = img.naturalWidth, H = img.naturalHeight;
-    const WORK_MAX = 800;
-    const workSc   = Math.min(1, WORK_MAX / Math.max(W,H));
-    const wW = Math.round(W*workSc), wH = Math.round(H*workSc);
 
+    // ── 1. Full-res pixel data ──
     const off = document.createElement('canvas');
-    off.width = wW; off.height = wH;
-    const offCtx = off.getContext('2d', {willReadFrequently:true});
-    offCtx.drawImage(img, 0, 0, wW, wH);
-    const data = offCtx.getImageData(0, 0, wW, wH).data;
+    off.width = W; off.height = H;
+    const offCtx = off.getContext('2d', {willReadFrequently: true});
+    offCtx.drawImage(img, 0, 0, W, H);
+    const data = offCtx.getImageData(0, 0, W, H).data;
 
-    // Use the already-detected bg color (with manual override support)
+    // ── 2. Background color already detected by detectBgColor() ──
     const bg = getBgColor();
-    const THRESH = autoThresh;  // adaptive, not user-set
+    const thresh = autoThresh;
 
-    // Build binary mask
-    const mask = new Uint8Array(wW*wH);
-    for (let i = 0; i < wW*wH; i++) {
-      const p = i*4;
-      if (data[p+3] < 128) { mask[i]=0; continue; }
-      const dr=data[p]-bg.r, dg=data[p+1]-bg.g, db=data[p+2]-bg.b;
-      mask[i] = (dr*dr+dg*dg+db*db) > THRESH*THRESH ? 1 : 0;
+    // ── 3. Build fg mask ──
+    const fg = new Float32Array(W * H);
+    for (let i = 0; i < W * H; i++) {
+      const p = i * 4;
+      if (data[p+3] < 128) continue;
+      const dr = data[p]-bg.r, dg = data[p+1]-bg.g, db = data[p+2]-bg.b;
+      fg[i] = (dr*dr+dg*dg+db*db) > thresh*thresh ? 1 : 0;
     }
 
-    // Horizontal projection
-    const rowProj = new Float32Array(wH);
-    for (let y=0; y<wH; y++) {
-      let s=0; for (let x=0;x<wW;x++) s+=mask[y*wW+x];
-      rowProj[y] = s/wW;
-    }
-
-    function findSegments(proj, size, gapThresh) {
-      const isGap = new Uint8Array(size);
-      for (let i=0;i<size;i++) isGap[i]=proj[i]<gapThresh?1:0;
-      for (let p=0;p<3;p++) for (let i=1;i<size-1;i++)
-        if (!isGap[i]&&isGap[i-1]&&isGap[i+1]) isGap[i]=1;
-      const segs=[]; let inSeg=false, s0=0;
-      for (let i=0;i<size;i++) {
-        if (!isGap[i]&&!inSeg){inSeg=true;s0=i;}
-        else if (isGap[i]&&inSeg){inSeg=false;segs.push({start:s0,end:i-1});}
+    // ── 4. Gaussian smooth helper ──
+    function gaussSmooth1D(arr, sigma) {
+      const r = Math.round(sigma * 2);
+      const out = new Float32Array(arr.length);
+      for (let i = 0; i < arr.length; i++) {
+        let s = 0, w = 0;
+        for (let j = Math.max(0, i-r); j <= Math.min(arr.length-1, i+r); j++) {
+          const g = Math.exp(-0.5*(i-j)*(i-j)/(sigma*sigma));
+          s += arr[j]*g; w += g;
+        }
+        out[i] = s/w;
       }
-      if (inSeg) segs.push({start:s0,end:size-1});
-      return segs;
+      return out;
     }
 
-    const rowSegs = findSegments(rowProj, wH, 0.04);
+    // ── 5. Row projection → row segments ──
+    const rowProj = new Float32Array(H);
+    for (let y = 0; y < H; y++) {
+      let s = 0;
+      for (let x = 0; x < W; x++) s += fg[y*W+x];
+      rowProj[y] = s / W;
+    }
+    const rowProjSm = gaussSmooth1D(rowProj, 3);
 
-    // Per-row column detection
-    const rowBands = [];
+    const GAP = 0.04;
+    const rowSegs = [];
+    let inSeg = false, segStart = 0;
+    for (let i = 0; i < H; i++) {
+      if (rowProjSm[i] >= GAP && !inSeg) { inSeg = true; segStart = i; }
+      else if (rowProjSm[i] < GAP && inSeg) { inSeg = false; rowSegs.push({s: segStart, e: i-1}); }
+    }
+    if (inSeg) rowSegs.push({s: segStart, e: H-1});
+
+    if (rowSegs.length < 1) { toast('⚠ 未偵測到貼圖，請手動框選'); return; }
+
+    const nCols = rowSegs.length; // assume square grid
+
+    // ── 6. Per-row column detection ──
+    const rects = [];
+    const minDim = Math.min(W, H) * 0.04;
+
     for (const rs of rowSegs) {
-      const bandH = rs.end-rs.start+1;
-      if (bandH < wH*0.04) continue;
-      const colProj = new Float32Array(wW);
-      for (let x=0;x<wW;x++) {
-        let s=0; for (let y=rs.start;y<=rs.end;y++) s+=mask[y*wW+x];
-        colProj[x]=s/bandH;
+      // Column projection for this row band
+      const colProj = new Float32Array(W);
+      const bandH = rs.e - rs.s + 1;
+      for (let x = 0; x < W; x++) {
+        let s = 0;
+        for (let y = rs.s; y <= rs.e; y++) s += fg[y*W+x];
+        colProj[x] = s / bandH;
       }
-      let colSegs=[];
-      for (const t of [0.04,0.08,0.12,0.18,0.25]) {
-        colSegs=findSegments(colProj,wW,t);
-        if (colSegs.length>=2) break;
+      const colProjSm = gaussSmooth1D(colProj, 3);
+
+      // Find cut positions: ideal equal split, refine to local minimum within ±20%
+      const iw = W / nCols;
+      const search = Math.round(iw * 0.20);
+      const cuts = [0];
+      for (let c = 1; c < nCols; c++) {
+        const ideal = Math.round(c * iw);
+        const lo = Math.max(0, ideal - search);
+        const hi = Math.min(W, ideal + search);
+        let minVal = Infinity, minIdx = ideal;
+        for (let x = lo; x < hi; x++) {
+          if (colProjSm[x] < minVal) { minVal = colProjSm[x]; minIdx = x; }
+        }
+        cuts.push(minIdx);
       }
-      rowBands.push({rs,colSegs,colProj});
-    }
+      cuts.push(W);
 
-    // Expected cols = number of row bands (sticker sheets are always N×N grids)
-    const expectedCols = rowBands.length >= 2 ? rowBands.length : 4;
-
-    const rects=[];
-    const minDim=Math.min(W,H)*0.04;
-
-    for (const {rs, colProj} of rowBands) {
-      // Always force equal column split — projection-based col detection
-      // is unreliable when sticker decorations span column gaps
-      const idealW = wW / expectedCols;
-      const forcedSegs = [];
-      for (let c = 0; c < expectedCols; c++) {
-        const searchR = Math.round(idealW * 0.12);
-        let start = c === 0 ? 0 : (() => {
-          const ideal = Math.round(c * idealW);
-          let mv=Infinity, mi=ideal;
-          for (let x=Math.max(0,ideal-searchR); x<=Math.min(wW-1,ideal+searchR); x++)
-            if (colProj[x]<mv){mv=colProj[x];mi=x;}
-          return mi+1;
-        })();
-        let end = c === expectedCols-1 ? wW-1 : (() => {
-          const ideal = Math.round((c+1)*idealW);
-          let mv=Infinity, mi=ideal;
-          for (let x=Math.max(0,ideal-searchR); x<=Math.min(wW-1,ideal+searchR); x++)
-            if (colProj[x]<mv){mv=colProj[x];mi=x;}
-          return mi;
-        })();
-        if (end > start) forcedSegs.push({start, end});
-      }
-
-      for (const cs of forcedSegs) {
-        if (cs.end-cs.start+1 < wW*0.04) continue;
-        let fg=0,tot=0;
-        for (let y=rs.start;y<=rs.end;y++)
-          for (let x=cs.start;x<=cs.end;x++) { fg+=mask[y*wW+x]; tot++; }
-        if (!tot||fg/tot<0.06) continue;
-
-        // INSET: pull each edge inward to avoid including neighbor cell's decorations
-        // Use 5px in working-res coords, convert back to original image coords
-        const INSET_PX = 5; // working-res pixels
-        const ROW_INSET = 4;
-        const isFirstRow = (rowBands.indexOf(rowBands.find(b=>b.rs===rs)) === 0);
-        const isLastRow  = (rowBands.indexOf(rowBands.find(b=>b.rs===rs)) === rowBands.length-1);
-        const isFirstCol = (cs === forcedSegs[0]);
-        const isLastCol  = (cs === forcedSegs[forcedSegs.length-1]);
-
-        const x1 = Math.max(0, Math.round((cs.start + (isFirstCol?0:INSET_PX)) / workSc));
-        const y1 = Math.max(0, Math.round((rs.start + (isFirstRow?0:ROW_INSET)) / workSc));
-        const x2 = Math.min(W, Math.round((cs.end   - (isLastCol ?0:INSET_PX)) / workSc));
-        const y2 = Math.min(H, Math.round((rs.end   - (isLastRow ?0:ROW_INSET)) / workSc));
-        const cw=x2-x1, ch=y2-y1;
-        if (cw<minDim||ch<minDim) continue;
-        rects.push({x:x1,y:y1,w:cw,h:ch});
+      for (let c = 0; c < nCols; c++) {
+        const x1 = cuts[c], x2 = cuts[c+1];
+        const y1 = rs.s, y2 = rs.e + 1;
+        const cw = x2 - x1, ch = y2 - y1;
+        if (cw < minDim || ch < minDim) continue;
+        rects.push({x: x1, y: y1, w: cw, h: ch});
       }
     }
 
-    rects.sort((a,b)=>a.y!==b.y?a.y-b.y:a.x-b.x);
+    rects.sort((a, b) => a.y !== b.y ? a.y - b.y : a.x - b.x);
 
     if (!rects.length) { toast('⚠ 未偵測到貼圖，請手動框選'); return; }
 
-    const available = MAX-items.length;
-    if (available<=0) { toast('已達上限 32 張！'); return; }
-    const toAdd = rects.slice(0,available);
+    // ── 7. Crop + bg removal ──
+    const available = MAX - items.length;
+    if (available <= 0) { toast('已達上限 32 張！'); return; }
+    const toAdd = rects.slice(0, available);
 
-    const base = curName.replace(/\.[^.]+$/,'');
-    for (let i=0;i<toAdd.length;i++) {
+    const base = curName.replace(/\.[^.]+$/, '');
+    for (let i = 0; i < toAdd.length; i++) {
       const r = toAdd[i];
-      // cropToCanvas applies bg removal if rmbgEnabled
       const cropCv = cropToCanvas(r.x, r.y, r.w, r.h);
       items.push({
         dataUrl: cropCv.toDataURL('image/png'),
@@ -1008,9 +1006,10 @@ async function autoDetect() {
   } catch(e) {
     console.error(e); toast('❌ 偵測失敗：'+e.message);
   } finally {
-    btn.disabled=false; btn.textContent='✦ 自動偵測貼圖';
+    btn.disabled = false; btn.textContent = '✦ 自動偵測貼圖';
   }
 }
+
 
 function drawDetectedBoxes(rects) {
   oCtx.clearRect(0,0,dW,dH);
