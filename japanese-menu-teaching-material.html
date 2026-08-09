@@ -1,0 +1,412 @@
+<title>昼の献立・日文菜單教材</title>
+<style>
+  :root {
+    --paper: #faf8f1;
+    --card: #fffefa;
+    --ink: #2b2723;
+    --ink-soft: #6b6258;
+    --line: #e2dccf;
+    --shu: #a63a2b;
+    --shu-soft: #f3e4df;
+    --gold: #8a7340;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1d1a16;
+      --card: #26221d;
+      --ink: #ece6da;
+      --ink-soft: #a89e90;
+      --line: #3c362e;
+      --shu: #e07a63;
+      --shu-soft: #40261f;
+      --gold: #c7ab6b;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1d1a16;
+    --card: #26221d;
+    --ink: #ece6da;
+    --ink-soft: #a89e90;
+    --line: #3c362e;
+    --shu: #e07a63;
+    --shu-soft: #40261f;
+    --gold: #c7ab6b;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    line-height: 1.7;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 20px 80px; }
+
+  .serif, h1, h2, h3 {
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", "Noto Serif TC", serif;
+  }
+
+  header.top { border-bottom: 3px double var(--line); padding-bottom: 28px; margin-bottom: 36px; }
+  .eyebrow {
+    display: inline-block; font-size: 12px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--shu); border: 1px solid var(--shu); padding: 3px 10px; border-radius: 2px; margin-bottom: 18px;
+  }
+  h1 { font-size: clamp(34px, 6vw, 52px); margin: 0 0 6px; font-weight: 600; text-wrap: balance; }
+  h1 rt { font-size: 14px; color: var(--shu); font-weight: 400; }
+  .h1-sub { color: var(--ink-soft); font-size: 15px; }
+  .h1-sub b { color: var(--ink); }
+
+  .howto {
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+    padding: 16px 20px; margin: 24px 0 0; font-size: 14px; color: var(--ink-soft);
+  }
+  .howto b { color: var(--shu); }
+
+  h2 {
+    font-size: 22px; margin: 56px 0 8px; padding-left: 14px;
+    border-left: 5px solid var(--shu); font-weight: 600; text-wrap: balance;
+  }
+  h2 .rd { font-size: 13px; color: var(--ink-soft); font-weight: 400; margin-left: 10px; white-space: nowrap; }
+  .sec-note { color: var(--ink-soft); font-size: 14px; margin: 0 0 20px 19px; }
+
+  .dish {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 24px 26px 20px; margin-bottom: 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .dish-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; }
+  .badge {
+    font-size: 12px; letter-spacing: .12em; color: var(--shu);
+    background: var(--shu-soft); border-radius: 2px; padding: 2px 8px; white-space: nowrap;
+  }
+  .dish h3 { font-size: clamp(21px, 3.4vw, 27px); margin: 6px 0 2px; font-weight: 600; line-height: 2.1; text-wrap: balance; }
+  .dish h3 rt, .items rt, .note rt, td rt { font-size: 11px; color: var(--shu); font-weight: 400; letter-spacing: 0; }
+  .price { margin-left: auto; font-size: 20px; color: var(--gold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .romaji { color: var(--ink-soft); font-size: 14px; font-style: italic; }
+  .zh { font-size: 15px; margin-top: 2px; }
+  .zh::before { content: "中文"; font-size: 11px; color: var(--shu); border: 1px solid currentColor; border-radius: 2px; padding: 0 4px; margin-right: 8px; font-style: normal; }
+
+  .items { margin-top: 18px; border-top: 1px dashed var(--line); padding-top: 14px; }
+  .items-label { font-size: 12px; letter-spacing: .2em; color: var(--ink-soft); margin-bottom: 10px; }
+  .items-label b { color: var(--shu); letter-spacing: .1em; }
+  .row {
+    display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: 4px 18px;
+    padding: 9px 0; border-bottom: 1px solid var(--line); align-items: baseline;
+  }
+  .row:last-child { border-bottom: none; }
+  .row .jp { font-size: 17px; line-height: 2; }
+  .row .rm { color: var(--ink-soft); font-size: 13.5px; font-style: italic; }
+  .row .cn { font-size: 14px; }
+  @media (max-width: 620px) {
+    .row { grid-template-columns: 1fr; gap: 1px; padding: 12px 0; }
+    .dish { padding: 20px 16px 16px; }
+  }
+
+  .note {
+    margin-top: 16px; background: var(--shu-soft); border-radius: 6px;
+    padding: 12px 16px; font-size: 14px; line-height: 2;
+  }
+  .note .rm-line { font-style: italic; color: var(--ink-soft); font-size: 13px; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font-size: 14.5px; }
+  .tbl-wrap { overflow-x: auto; margin-top: 18px; }
+  th { text-align: left; font-size: 12px; letter-spacing: .15em; color: var(--ink-soft); font-weight: 600; padding: 10px 14px; border-bottom: 2px solid var(--line); background: color-mix(in srgb, var(--card) 60%, var(--paper)); white-space: nowrap; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.j { font-size: 16.5px; line-height: 2; min-width: 13em; }
+  td.r { font-style: italic; color: var(--ink-soft); }
+  td.p { text-align: right; font-variant-numeric: tabular-nums; color: var(--gold); white-space: nowrap; }
+
+  footer { margin-top: 64px; border-top: 3px double var(--line); padding-top: 18px; color: var(--ink-soft); font-size: 13px; }
+</style>
+
+<div class="wrap">
+<header class="top">
+  <span class="eyebrow">日本語・菜單閱讀教材</span>
+  <h1><ruby>昼<rt>ひる</rt></ruby>の<ruby>献立<rt>こんだて</rt></ruby></h1>
+  <div class="h1-sub"><i>hiru no kondate</i> ・ <b>午餐菜單</b>（和食えん）</div>
+  <div class="howto">
+    使用方式：每道菜的<b>漢字上方紅色小字</b>即為假名讀音（振り仮名），底下附<b>羅馬拼音</b>（斜體）與<b>中文翻譯</b>。
+    每份套餐的「セット内容（套餐內容）」逐項分開標音，可直接對照原菜單練習點餐。
+  </div>
+</header>
+
+<!-- ══════════ 特撰御膳 ══════════ -->
+<h2>一、<ruby>特撰御膳<rt>とくせんごぜん</rt></ruby><span class="rd">tokusen gozen ・ 特選套餐</span></h2>
+<p class="sec-note">菜單右上方框內的兩款推薦套餐。</p>
+
+<div class="dish">
+  <div class="dish-head">
+    <h3>メロカマの<ruby>煮付<rt>につ</rt></ruby>けとお<ruby>造<rt>つく</rt></ruby>り<ruby>御膳<rt>ごぜん</rt></ruby></h3>
+    <span class="price">¥2,900</span>
+  </div>
+  <div class="romaji">merokama no nitsuke to o-tsukuri gozen</div>
+  <div class="zh">燉煮美露鱈魚下巴與生魚片御膳</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp">メロカマの<ruby>煮付<rt>につ</rt></ruby>け</span><span class="rm">merokama no nitsuke</span><span class="cn">醬燒燉煮美露鱈魚下巴</span></div>
+    <div class="row"><span class="jp">お<ruby>造<rt>つく</rt></ruby>り</span><span class="rm">o-tsukuri</span><span class="cn">生魚片</span></div>
+    <div class="row"><span class="jp"><ruby>豆腐<rt>とうふ</rt></ruby></span><span class="rm">tōfu</span><span class="cn">豆腐</span></div>
+    <div class="row"><span class="jp"><ruby>白米<rt>はくまい</rt></ruby><ruby>又<rt>また</rt></ruby>は<ruby>玄米<rt>げんまい</rt></ruby></span><span class="rm">hakumai mata wa genmai</span><span class="cn">白米或糙米</span></div>
+    <div class="row"><span class="jp"><ruby>味噌汁<rt>みそしる</rt></ruby></span><span class="rm">misoshiru</span><span class="cn">味噌湯</span></div>
+    <div class="row"><span class="jp">お<ruby>漬物<rt>つけもの</rt></ruby></span><span class="rm">o-tsukemono</span><span class="cn">日式醬菜</span></div>
+  </div>
+</div>
+
+<div class="dish">
+  <div class="dish-head">
+    <h3>お<ruby>昼<rt>ひる</rt></ruby>の<ruby>特撰膳<rt>とくせんぜん</rt></ruby></h3>
+    <span class="price">¥3,500</span>
+  </div>
+  <div class="romaji">o-hiru no tokusen-zen</div>
+  <div class="zh">午間特選御膳</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp"><ruby>前菜<rt>ぜんさい</rt></ruby>4<ruby>種盛<rt>しゅも</rt></ruby>り</span><span class="rm">zensai yonshu-mori</span><span class="cn">四種前菜拼盤</span></div>
+    <div class="row"><span class="jp">お<ruby>造<rt>つく</rt></ruby>り2<ruby>点<rt>てん</rt></ruby></span><span class="rm">o-tsukuri ni-ten</span><span class="cn">兩款生魚片</span></div>
+    <div class="row"><span class="jp"><ruby>焼<rt>や</rt></ruby>き<ruby>物<rt>もの</rt></ruby></span><span class="rm">yakimono</span><span class="cn">燒烤料理</span></div>
+    <div class="row"><span class="jp"><ruby>揚<rt>あ</rt></ruby>げ<ruby>物<rt>もの</rt></ruby></span><span class="rm">agemono</span><span class="cn">油炸料理</span></div>
+    <div class="row"><span class="jp"><ruby>煮物<rt>にもの</rt></ruby></span><span class="rm">nimono</span><span class="cn">燉煮料理</span></div>
+    <div class="row"><span class="jp"><ruby>白米<rt>はくまい</rt></ruby><ruby>又<rt>また</rt></ruby>は<ruby>玄米<rt>げんまい</rt></ruby></span><span class="rm">hakumai mata wa genmai</span><span class="cn">白米或糙米</span></div>
+    <div class="row"><span class="jp"><ruby>味噌汁<rt>みそしる</rt></ruby></span><span class="rm">misoshiru</span><span class="cn">味噌湯</span></div>
+    <div class="row"><span class="jp">お<ruby>漬物<rt>つけもの</rt></ruby></span><span class="rm">o-tsukemono</span><span class="cn">日式醬菜</span></div>
+    <div class="row"><span class="jp"><ruby>甘味<rt>かんみ</rt></ruby></span><span class="rm">kanmi</span><span class="cn">甜點</span></div>
+    <div class="row"><span class="jp">コーヒー<ruby>又<rt>また</rt></ruby>は<ruby>紅茶<rt>こうちゃ</rt></ruby></span><span class="rm">kōhī mata wa kōcha</span><span class="cn">咖啡或紅茶</span></div>
+  </div>
+  <div class="note">
+    ※ プラス500<ruby>円<rt>えん</rt></ruby>で<ruby>白米<rt>はくまい</rt></ruby>を「<ruby>握<rt>にぎ</rt></ruby>り3<ruby>貫<rt>かん</rt></ruby>、<ruby>巻物<rt>まきもの</rt></ruby>1<ruby>本<rt>ぽん</rt></ruby>」に<ruby>変更可能<rt>へんこうかのう</rt></ruby>です。<br>
+    <span class="rm-line">purasu gohyaku-en de hakumai o "nigiri san-kan, makimono ippon" ni henkō kanō desu</span><br>
+    中文：加 500 日圓可將白飯換成「握壽司 3 貫、壽司卷 1 條」。
+  </div>
+</div>
+
+<!-- ══════════ 平日限定 ══════════ -->
+<h2>二、<ruby>平日限定<rt>へいじつげんてい</rt></ruby><span class="rd">heijitsu gentei ・ 僅平日供應</span></h2>
+
+<div class="dish">
+  <div class="dish-head">
+    <span class="badge">平日限定</span>
+    <h3><ruby>本日<rt>ほんじつ</rt></ruby>のお<ruby>魚料理<rt>さかなりょうり</rt></ruby></h3>
+    <span class="price">¥1,350</span>
+  </div>
+  <div class="romaji">honjitsu no o-sakana ryōri</div>
+  <div class="zh">本日鮮魚料理</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp"><ruby>本日<rt>ほんじつ</rt></ruby>のお<ruby>魚料理<rt>さかなりょうり</rt></ruby></span><span class="rm">honjitsu no o-sakana ryōri</span><span class="cn">本日鮮魚料理（主菜）</span></div>
+    <div class="row"><span class="jp"><ruby>三陸産<rt>さんりくさん</rt></ruby>あかもくとろろ</span><span class="rm">sanriku-san akamoku tororo</span><span class="cn">三陸產銅藻海藻泥</span></div>
+    <div class="row"><span class="jp"><ruby>豆腐<rt>とうふ</rt></ruby></span><span class="rm">tōfu</span><span class="cn">豆腐</span></div>
+    <div class="row"><span class="jp"><ruby>白米<rt>はくまい</rt></ruby><ruby>又<rt>また</rt></ruby>は<ruby>玄米<rt>げんまい</rt></ruby></span><span class="rm">hakumai mata wa genmai</span><span class="cn">白米或糙米</span></div>
+    <div class="row"><span class="jp"><ruby>味噌汁<rt>みそしる</rt></ruby></span><span class="rm">misoshiru</span><span class="cn">味噌湯</span></div>
+    <div class="row"><span class="jp">お<ruby>漬物<rt>つけもの</rt></ruby></span><span class="rm">o-tsukemono</span><span class="cn">日式醬菜</span></div>
+  </div>
+</div>
+
+<div class="dish">
+  <div class="dish-head">
+    <span class="badge">平日限定</span>
+    <h3><ruby>本日<rt>ほんじつ</rt></ruby>のお<ruby>肉料理<rt>にくりょうり</rt></ruby></h3>
+    <span class="price">¥1,350</span>
+  </div>
+  <div class="romaji">honjitsu no o-niku ryōri</div>
+  <div class="zh">本日肉類料理</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp"><ruby>本日<rt>ほんじつ</rt></ruby>のお<ruby>肉料理<rt>にくりょうり</rt></ruby></span><span class="rm">honjitsu no o-niku ryōri</span><span class="cn">本日肉類料理（主菜）</span></div>
+    <div class="row"><span class="jp"><ruby>三陸産<rt>さんりくさん</rt></ruby>あかもくとろろ</span><span class="rm">sanriku-san akamoku tororo</span><span class="cn">三陸產銅藻海藻泥</span></div>
+    <div class="row"><span class="jp"><ruby>豆腐<rt>とうふ</rt></ruby></span><span class="rm">tōfu</span><span class="cn">豆腐</span></div>
+    <div class="row"><span class="jp"><ruby>白米<rt>はくまい</rt></ruby><ruby>又<rt>また</rt></ruby>は<ruby>玄米<rt>げんまい</rt></ruby></span><span class="rm">hakumai mata wa genmai</span><span class="cn">白米或糙米</span></div>
+    <div class="row"><span class="jp"><ruby>味噌汁<rt>みそしる</rt></ruby></span><span class="rm">misoshiru</span><span class="cn">味噌湯</span></div>
+    <div class="row"><span class="jp">お<ruby>漬物<rt>つけもの</rt></ruby></span><span class="rm">o-tsukemono</span><span class="cn">日式醬菜</span></div>
+  </div>
+</div>
+
+<!-- ══════════ 御膳類 ══════════ -->
+<h2>三、<ruby>御膳<rt>ごぜん</rt></ruby>メニュー<span class="rd">gozen menyū ・ 每日供應的定食套餐</span></h2>
+
+<div class="dish">
+  <div class="dish-head">
+    <h3><ruby>銀鱈<rt>ぎんだら</rt></ruby>の<ruby>西京焼<rt>さいきょうや</rt></ruby>き<ruby>御膳<rt>ごぜん</rt></ruby></h3>
+    <span class="price">¥1,680</span>
+  </div>
+  <div class="romaji">gindara no saikyō-yaki gozen</div>
+  <div class="zh">銀鱈西京燒御膳（西京白味噌醃漬後燒烤）</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp"><ruby>銀鱈<rt>ぎんだら</rt></ruby>の<ruby>西京焼<rt>さいきょうや</rt></ruby>き</span><span class="rm">gindara no saikyō-yaki</span><span class="cn">西京味噌醃烤銀鱈</span></div>
+    <div class="row"><span class="jp"><ruby>三陸産<rt>さんりくさん</rt></ruby>あかもくとろろ</span><span class="rm">sanriku-san akamoku tororo</span><span class="cn">三陸產銅藻海藻泥</span></div>
+    <div class="row"><span class="jp"><ruby>豆腐<rt>とうふ</rt></ruby></span><span class="rm">tōfu</span><span class="cn">豆腐</span></div>
+    <div class="row"><span class="jp"><ruby>白米<rt>はくまい</rt></ruby><ruby>又<rt>また</rt></ruby>は<ruby>玄米<rt>げんまい</rt></ruby></span><span class="rm">hakumai mata wa genmai</span><span class="cn">白米或糙米</span></div>
+    <div class="row"><span class="jp"><ruby>味噌汁<rt>みそしる</rt></ruby></span><span class="rm">misoshiru</span><span class="cn">味噌湯</span></div>
+    <div class="row"><span class="jp">お<ruby>漬物<rt>つけもの</rt></ruby></span><span class="rm">o-tsukemono</span><span class="cn">日式醬菜</span></div>
+  </div>
+</div>
+
+<div class="dish">
+  <div class="dish-head">
+    <h3><ruby>天<rt>てん</rt></ruby>せいろ<ruby>蕎麦<rt>そば</rt></ruby>と<ruby>握<rt>にぎ</rt></ruby>り<ruby>寿司<rt>ずし</rt></ruby><ruby>御膳<rt>ごぜん</rt></ruby></h3>
+    <span class="price">¥1,900</span>
+  </div>
+  <div class="romaji">ten-seiro soba to nigiri-zushi gozen</div>
+  <div class="zh">天婦羅蒸籠蕎麥麵與握壽司御膳</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp">せいろ<ruby>蕎麦<rt>そば</rt></ruby></span><span class="rm">seiro soba</span><span class="cn">蒸籠冷蕎麥麵</span></div>
+    <div class="row"><span class="jp"><ruby>天婦羅<rt>てんぷら</rt></ruby><ruby>盛<rt>も</rt></ruby>り<ruby>合<rt>あ</rt></ruby>わせ</span><span class="rm">tenpura moriawase</span><span class="cn">天婦羅拼盤</span></div>
+    <div class="row"><span class="jp"><ruby>握<rt>にぎ</rt></ruby>り<ruby>寿司<rt>ずし</rt></ruby>3<ruby>貫<rt>かん</rt></ruby></span><span class="rm">nigiri-zushi san-kan</span><span class="cn">握壽司 3 貫</span></div>
+  </div>
+</div>
+
+<div class="dish">
+  <div class="dish-head">
+    <h3><ruby>季節<rt>きせつ</rt></ruby>のお<ruby>魚<rt>さかな</rt></ruby>と<ruby>旬野菜<rt>しゅんやさい</rt></ruby>の<ruby>天婦羅<rt>てんぷら</rt></ruby><ruby>御膳<rt>ごぜん</rt></ruby></h3>
+    <span class="price">¥1,900</span>
+  </div>
+  <div class="romaji">kisetsu no o-sakana to shun-yasai no tenpura gozen</div>
+  <div class="zh">季節鮮魚與時令蔬菜天婦羅御膳</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp"><ruby>季節<rt>きせつ</rt></ruby>のお<ruby>魚<rt>さかな</rt></ruby>と<ruby>旬野菜<rt>しゅんやさい</rt></ruby>の<ruby>天婦羅<rt>てんぷら</rt></ruby></span><span class="rm">kisetsu no o-sakana to shun-yasai no tenpura</span><span class="cn">季節鮮魚與時令蔬菜天婦羅</span></div>
+    <div class="row"><span class="jp"><ruby>三陸産<rt>さんりくさん</rt></ruby>あかもくとろろ</span><span class="rm">sanriku-san akamoku tororo</span><span class="cn">三陸產銅藻海藻泥</span></div>
+    <div class="row"><span class="jp"><ruby>豆腐<rt>とうふ</rt></ruby></span><span class="rm">tōfu</span><span class="cn">豆腐</span></div>
+    <div class="row"><span class="jp"><ruby>白米<rt>はくまい</rt></ruby><ruby>又<rt>また</rt></ruby>は<ruby>玄米<rt>げんまい</rt></ruby></span><span class="rm">hakumai mata wa genmai</span><span class="cn">白米或糙米</span></div>
+    <div class="row"><span class="jp"><ruby>味噌汁<rt>みそしる</rt></ruby></span><span class="rm">misoshiru</span><span class="cn">味噌湯</span></div>
+    <div class="row"><span class="jp">お<ruby>漬物<rt>つけもの</rt></ruby></span><span class="rm">o-tsukemono</span><span class="cn">日式醬菜</span></div>
+  </div>
+</div>
+
+<div class="dish">
+  <div class="dish-head">
+    <h3><ruby>霧島豚<rt>きりしまぶた</rt></ruby>の<ruby>生姜焼<rt>しょうがや</rt></ruby>き<ruby>御膳<rt>ごぜん</rt></ruby></h3>
+    <span class="price">¥1,780</span>
+  </div>
+  <div class="romaji">kirishima-buta no shōga-yaki gozen</div>
+  <div class="zh">霧島豬肉薑燒御膳</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp"><ruby>霧島豚<rt>きりしまぶた</rt></ruby>の<ruby>生姜焼<rt>しょうがや</rt></ruby>き</span><span class="rm">kirishima-buta no shōga-yaki</span><span class="cn">霧島豬肉薑燒</span></div>
+    <div class="row"><span class="jp"><ruby>三陸産<rt>さんりくさん</rt></ruby>あかもくとろろ</span><span class="rm">sanriku-san akamoku tororo</span><span class="cn">三陸產銅藻海藻泥</span></div>
+    <div class="row"><span class="jp"><ruby>豆腐<rt>とうふ</rt></ruby></span><span class="rm">tōfu</span><span class="cn">豆腐</span></div>
+    <div class="row"><span class="jp"><ruby>白米<rt>はくまい</rt></ruby><ruby>又<rt>また</rt></ruby>は<ruby>玄米<rt>げんまい</rt></ruby></span><span class="rm">hakumai mata wa genmai</span><span class="cn">白米或糙米</span></div>
+    <div class="row"><span class="jp"><ruby>味噌汁<rt>みそしる</rt></ruby></span><span class="rm">misoshiru</span><span class="cn">味噌湯</span></div>
+    <div class="row"><span class="jp">お<ruby>漬物<rt>つけもの</rt></ruby></span><span class="rm">o-tsukemono</span><span class="cn">日式醬菜</span></div>
+  </div>
+</div>
+
+<div class="dish">
+  <div class="dish-head">
+    <h3><ruby>和食<rt>わしょく</rt></ruby>えんの<ruby>寿司<rt>すし</rt></ruby><ruby>御膳<rt>ごぜん</rt></ruby></h3>
+    <span class="price">¥2,800</span>
+  </div>
+  <div class="romaji">washoku en no sushi gozen</div>
+  <div class="zh">「和食えん」（店名）壽司御膳</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp"><ruby>寿司<rt>すし</rt></ruby>8<ruby>貫<rt>かん</rt></ruby></span><span class="rm">sushi hachi-kan</span><span class="cn">壽司 8 貫</span></div>
+    <div class="row"><span class="jp"><ruby>巻物<rt>まきもの</rt></ruby></span><span class="rm">makimono</span><span class="cn">壽司卷</span></div>
+    <div class="row"><span class="jp"><ruby>茶碗蒸<rt>ちゃわんむ</rt></ruby>し</span><span class="rm">chawanmushi</span><span class="cn">茶碗蒸</span></div>
+    <div class="row"><span class="jp"><ruby>天婦羅<rt>てんぷら</rt></ruby></span><span class="rm">tenpura</span><span class="cn">天婦羅</span></div>
+    <div class="row"><span class="jp"><ruby>味噌汁<rt>みそしる</rt></ruby></span><span class="rm">misoshiru</span><span class="cn">味噌湯</span></div>
+  </div>
+</div>
+
+<!-- ══════════ 休日限定 ══════════ -->
+<h2>四、<ruby>休日限定<rt>きゅうじつげんてい</rt></ruby><span class="rd">kyūjitsu gentei ・ 僅假日供應</span></h2>
+
+<div class="dish">
+  <div class="dish-head">
+    <span class="badge">休日限定</span>
+    <h3><ruby>和食<rt>わしょく</rt></ruby>えんのランチ<ruby>御膳<rt>ごぜん</rt></ruby></h3>
+    <span class="price">¥1,750</span>
+  </div>
+  <div class="romaji">washoku en no ranchi gozen</div>
+  <div class="zh">「和食えん」午餐御膳</div>
+  <div class="items">
+    <div class="items-label"><b>セット内容</b>（せっとないよう／setto naiyō）── 套餐內容</div>
+    <div class="row"><span class="jp"><ruby>本日<rt>ほんじつ</rt></ruby>のお<ruby>肉料理<rt>にくりょうり</rt></ruby>＋<ruby>本日<rt>ほんじつ</rt></ruby>のお<ruby>魚料理<rt>さかなりょうり</rt></ruby></span><span class="rm">honjitsu no o-niku ryōri + honjitsu no o-sakana ryōri</span><span class="cn">本日肉類料理＋本日鮮魚料理</span></div>
+    <div class="row"><span class="jp"><ruby>三陸産<rt>さんりくさん</rt></ruby>あかもくとろろ</span><span class="rm">sanriku-san akamoku tororo</span><span class="cn">三陸產銅藻海藻泥</span></div>
+    <div class="row"><span class="jp"><ruby>豆腐<rt>とうふ</rt></ruby></span><span class="rm">tōfu</span><span class="cn">豆腐</span></div>
+    <div class="row"><span class="jp"><ruby>白米<rt>はくまい</rt></ruby><ruby>又<rt>また</rt></ruby>は<ruby>玄米<rt>げんまい</rt></ruby></span><span class="rm">hakumai mata wa genmai</span><span class="cn">白米或糙米</span></div>
+    <div class="row"><span class="jp"><ruby>味噌汁<rt>みそしる</rt></ruby></span><span class="rm">misoshiru</span><span class="cn">味噌湯</span></div>
+    <div class="row"><span class="jp">お<ruby>漬物<rt>つけもの</rt></ruby></span><span class="rm">o-tsukemono</span><span class="cn">日式醬菜</span></div>
+  </div>
+</div>
+
+<!-- ══════════ 甘味 ══════════ -->
+<h2>五、<ruby>甘味<rt>かんみ</rt></ruby><span class="rd">kanmi ・ 甜點</span></h2>
+<p class="sec-note">お<ruby>食事後<rt>しょくじご</rt></ruby>の<ruby>甘味<rt>かんみ</rt></ruby>もセットで（o-shokuji-go no kanmi mo setto de）── 餐後甜點也可加購成套。</p>
+<div class="tbl-wrap"><table>
+  <tr><th>日文（附讀音）</th><th>羅馬拼音</th><th>中文</th><th>價格</th></tr>
+  <tr><td class="j"><ruby>宇治抹茶<rt>うじまっちゃ</rt></ruby>アイス</td><td class="r">Uji matcha aisu</td><td>宇治抹茶冰淇淋</td><td class="p">¥690</td></tr>
+  <tr><td class="j">バニラアイス</td><td class="r">banira aisu</td><td>香草冰淇淋</td><td class="p">¥690</td></tr>
+  <tr><td class="j">ブラッドオレンジのシャーベット</td><td class="r">buraddo orenji no shābetto</td><td>血橙雪酪</td><td class="p">¥630</td></tr>
+  <tr><td class="j">わらび<ruby>餅<rt>もち</rt></ruby>のクリームぜんざい</td><td class="r">warabimochi no kurīmu zenzai</td><td>蕨餅奶油紅豆湯</td><td class="p">¥720</td></tr>
+  <tr><td class="j"><ruby>蕎麦茶<rt>そばちゃ</rt></ruby>のプリン　<ruby>黒豆<rt>くろまめ</rt></ruby>ブリュレ</td><td class="r">sobacha no purin kuromame buryure</td><td>蕎麥茶布丁佐黑豆烤布蕾</td><td class="p">¥790</td></tr>
+</table></div>
+
+<!-- ══════════ 飲料 ══════════ -->
+<h2>六、お<ruby>飲<rt>の</rt></ruby>み<ruby>物<rt>もの</rt></ruby><span class="rd">o-nomimono ・ 飲料</span></h2>
+<div class="tbl-wrap"><table>
+  <tr><th>日文（附讀音）</th><th>羅馬拼音</th><th>中文</th><th>價格</th></tr>
+  <tr><td class="j">オレンジジュース</td><td class="r">orenji jūsu</td><td>柳橙汁</td><td class="p">¥650</td></tr>
+  <tr><td class="j">グレープフルーツジュース</td><td class="r">gurēpufurūtsu jūsu</td><td>葡萄柚汁</td><td class="p">¥650</td></tr>
+  <tr><td class="j">ジンジャーエール</td><td class="r">jinjā ēru</td><td>薑汁汽水</td><td class="p">¥650</td></tr>
+  <tr><td class="j">コーヒー（ホット／アイス）</td><td class="r">kōhī (hotto / aisu)</td><td>咖啡（熱／冰）</td><td class="p">¥550</td></tr>
+  <tr><td class="j"><ruby>紅茶<rt>こうちゃ</rt></ruby>（ホット／アイス）</td><td class="r">kōcha (hotto / aisu)</td><td>紅茶（熱／冰）</td><td class="p">¥550</td></tr>
+</table></div>
+
+<!-- ══════════ 酒 ══════════ -->
+<h2>七、お<ruby>酒<rt>さけ</rt></ruby><span class="rd">o-sake ・ 酒類</span></h2>
+<div class="tbl-wrap"><table>
+  <tr><th>日文（附讀音）</th><th>羅馬拼音</th><th>中文</th><th>價格</th></tr>
+  <tr><td class="j">アサヒスーパードライ　<ruby>生<rt>なま</rt></ruby>ビール</td><td class="r">Asahi sūpā dorai nama bīru</td><td>朝日 Super Dry 生啤酒</td><td class="p">¥880</td></tr>
+  <tr><td class="j">キリン<ruby>一番搾<rt>いちばんしぼ</rt></ruby>り　<ruby>生<rt>なま</rt></ruby>ビール</td><td class="r">Kirin ichiban shibori nama bīru</td><td>麒麟一番搾生啤酒</td><td class="p">¥880</td></tr>
+  <tr><td class="j">ヱビス　<ruby>生<rt>なま</rt></ruby>ビール</td><td class="r">Ebisu nama bīru</td><td>惠比壽生啤酒</td><td class="p">¥900</td></tr>
+  <tr><td class="j">アサヒスーパードライ　<ruby>瓶<rt>びん</rt></ruby>ビール</td><td class="r">Asahi sūpā dorai bin bīru</td><td>朝日 Super Dry 瓶裝啤酒</td><td class="p">¥930</td></tr>
+  <tr><td class="j">ノンアルコールビール</td><td class="r">non-arukōru bīru</td><td>無酒精啤酒</td><td class="p">¥750</td></tr>
+</table></div>
+<div class="note" style="margin-top:14px;">
+  ※ その<ruby>他<rt>ほか</rt></ruby>、<ruby>日本酒<rt>にほんしゅ</rt></ruby>、<ruby>焼酎<rt>しょうちゅう</rt></ruby>、ワインも<ruby>各種<rt>かくしゅ</rt></ruby>ご<ruby>用意<rt>ようい</rt></ruby>しております。<br>
+  <span class="rm-line">sono hoka, nihonshu, shōchū, wain mo kakushu go-yōi shite orimasu</span><br>
+  中文：另備有多種日本酒（清酒）、燒酎、葡萄酒。
+</div>
+
+<!-- ══════════ 附註 ══════════ -->
+<h2>八、菜單附註說明</h2>
+<div class="dish">
+  <div class="items" style="border-top:none; padding-top:0; margin-top:0;">
+    <div class="row"><span class="jp">プラス200<ruby>円<rt>えん</rt></ruby>でコーヒー<ruby>又<rt>また</rt></ruby>は<ruby>紅茶<rt>こうちゃ</rt></ruby>が<ruby>付<rt>つ</rt></ruby>きます</span><span class="rm">purasu nihyaku-en de kōhī mata wa kōcha ga tsukimasu</span><span class="cn">加 200 日圓可附咖啡或紅茶</span></div>
+    <div class="row"><span class="jp"><ruby>各<rt>かく</rt></ruby>メニューは<ruby>御飯<rt>ごはん</rt></ruby>のお<ruby>替<rt>かわ</rt></ruby>りができます</span><span class="rm">kaku menyū wa gohan no okawari ga dekimasu</span><span class="cn">每份餐點的飯皆可續碗</span></div>
+    <div class="row"><span class="jp"><ruby>白米<rt>はくまい</rt></ruby><ruby>又<rt>また</rt></ruby>は<ruby>玄米<rt>げんまい</rt></ruby>がお<ruby>選<rt>えら</rt></ruby>びいただけます</span><span class="rm">hakumai mata wa genmai ga o-erabi itadakemasu</span><span class="cn">可選擇白米或糙米</span></div>
+    <div class="row"><span class="jp">※<ruby>玄米<rt>げんまい</rt></ruby>はなくなり<ruby>次第終了<rt>しだいしゅうりょう</rt></ruby>となります</span><span class="rm">genmai wa nakunari shidai shūryō to narimasu</span><span class="cn">糙米售完為止</span></div>
+    <div class="row"><span class="jp"><ruby>三陸産<rt>さんりくさん</rt></ruby>あかもく：ミネラル・<ruby>食物繊維<rt>しょくもつせんい</rt></ruby>が<ruby>豊富<rt>ほうふ</rt></ruby>なネバネバ<ruby>海藻<rt>かいそう</rt></ruby>「あかもく」</span><span class="rm">mineraru, shokumotsu sen'i ga hōfu na nebaneba kaisō "akamoku"</span><span class="cn">富含礦物質與膳食纖維、口感黏滑的海藻「銅藻」</span></div>
+  </div>
+</div>
+
+<!-- ══════════ 單字 ══════════ -->
+<h2>九、常用單字總整理</h2>
+<div class="tbl-wrap"><table>
+  <tr><th>日文</th><th>假名</th><th>羅馬拼音</th><th>中文</th></tr>
+  <tr><td class="j">献立</td><td>こんだて</td><td class="r">kondate</td><td>菜單</td></tr>
+  <tr><td class="j">御膳</td><td>ごぜん</td><td class="r">gozen</td><td>御膳（成套定食）</td></tr>
+  <tr><td class="j">平日限定</td><td>へいじつげんてい</td><td class="r">heijitsu gentei</td><td>僅平日供應</td></tr>
+  <tr><td class="j">休日限定</td><td>きゅうじつげんてい</td><td class="r">kyūjitsu gentei</td><td>僅假日供應</td></tr>
+  <tr><td class="j">本日</td><td>ほんじつ</td><td class="r">honjitsu</td><td>本日</td></tr>
+  <tr><td class="j">又は</td><td>または</td><td class="r">mata wa</td><td>或</td></tr>
+  <tr><td class="j">お替り</td><td>おかわり</td><td class="r">okawari</td><td>續碗、再來一份</td></tr>
+  <tr><td class="j">貫</td><td>かん</td><td class="r">kan</td><td>貫（壽司量詞）</td></tr>
+  <tr><td class="j">盛り合わせ</td><td>もりあわせ</td><td class="r">moriawase</td><td>拼盤</td></tr>
+  <tr><td class="j">旬</td><td>しゅん</td><td class="r">shun</td><td>當季、時令</td></tr>
+  <tr><td class="j">煮付け</td><td>につけ</td><td class="r">nitsuke</td><td>醬燒燉煮</td></tr>
+  <tr><td class="j">西京焼き</td><td>さいきょうやき</td><td class="r">saikyō-yaki</td><td>西京燒（白味噌醃烤）</td></tr>
+  <tr><td class="j">生姜焼き</td><td>しょうがやき</td><td class="r">shōga-yaki</td><td>薑燒</td></tr>
+  <tr><td class="j">お造り</td><td>おつくり</td><td class="r">o-tsukuri</td><td>生魚片（＝刺身）</td></tr>
+  <tr><td class="j">とろろ</td><td>とろろ</td><td class="r">tororo</td><td>磨成泥的黏滑食材</td></tr>
+  <tr><td class="j">ホット／アイス</td><td>ほっと／あいす</td><td class="r">hotto / aisu</td><td>熱的／冰的</td></tr>
+  <tr><td class="j">生ビール</td><td>なまビール</td><td class="r">nama bīru</td><td>生啤酒</td></tr>
+  <tr><td class="j">瓶ビール</td><td>びんビール</td><td class="r">bin bīru</td><td>瓶裝啤酒</td></tr>
+</table></div>
+
+<footer>依照「和食えん」昼の献立菜單照片整理製作 ・ 漢字上方紅字＝假名讀音（振り仮名） ・ 斜體＝羅馬拼音</footer>
+</div>
