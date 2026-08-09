@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日本料理日語教材 — 每道菜・每句都有發音</title>
+<style>
+:root{
+  --bg:#faf6ef; --card:#ffffff; --ink:#3a2f2a; --mut:#8a7d72;
+  --acc:#c94f3d; --acc-soft:#f6e3df; --line:#e8ddd0;
+  --green:#5a7a4f; --green-soft:#e9f0e4;
+  --blue:#4a6d8c; --blue-soft:#e4edf4;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Hiragino Sans","Noto Sans JP","Microsoft JhengHei","PingFang TC",sans-serif;
+  line-height:1.6;padding-bottom:60px}
+header{background:var(--acc);color:#fff;padding:26px 18px 22px;text-align:center}
+header h1{font-size:22px;letter-spacing:2px}
+header p{font-size:13px;opacity:.9;margin-top:6px}
+.tools{max-width:860px;margin:14px auto 0;padding:0 16px;display:flex;gap:10px;
+  align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.tools .hint{font-size:12px;color:var(--mut);margin-right:auto}
+.tgl{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink);
+  cursor:pointer;user-select:none;background:var(--card);border:1px solid var(--line);
+  border-radius:20px;padding:6px 14px}
+.tgl input{accent-color:var(--acc)}
+main{max-width:860px;margin:10px auto 0;padding:0 16px}
+.dish{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  margin-top:18px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.dish-head{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer}
+.dish-no{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--acc-soft);
+  color:var(--acc);font-weight:700;display:grid;place-items:center;font-size:15px}
+.dish-title{flex:1;min-width:0}
+.dish-title ruby{font-size:22px;font-weight:700}
+.dish-title rt{font-size:11px;color:var(--acc);font-weight:400}
+.dish-sub{font-size:13px;color:var(--mut);margin-top:2px}
+.dish-sub b{color:var(--blue);font-weight:600}
+.spk{flex-shrink:0;border:1px solid var(--line);background:var(--card);border-radius:50%;
+  width:40px;height:40px;font-size:18px;cursor:pointer;display:grid;place-items:center;
+  transition:transform .1s,background .15s}
+.spk:active{transform:scale(.92)}
+.spk.playing{background:var(--acc-soft);border-color:var(--acc)}
+.arrow{flex-shrink:0;color:var(--mut);font-size:13px;transition:transform .2s}
+.dish.open .arrow{transform:rotate(90deg)}
+.dish-body{display:none;border-top:1px dashed var(--line);padding:6px 18px 18px}
+.dish.open .dish-body{display:block}
+.sec{margin-top:14px}
+.sec-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+  letter-spacing:1px;border-radius:6px;padding:3px 10px;margin-bottom:8px}
+.sec-tag.intro{background:var(--blue-soft);color:var(--blue)}
+.sec-tag.ing{background:var(--green-soft);color:var(--green)}
+.sec-tag.step{background:var(--acc-soft);color:var(--acc)}
+.row{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border-radius:10px}
+.row:hover{background:var(--bg)}
+.row+.row{margin-top:2px}
+.row .spk{width:32px;height:32px;font-size:14px;margin-top:2px}
+.row-main{flex:1;min-width:0}
+.row-main ruby{font-size:17px}
+.row-main rt{font-size:10px;color:var(--acc)}
+.roma{font-size:12.5px;color:var(--blue);font-style:italic;margin-top:1px}
+.zh{font-size:12.5px;color:var(--mut);margin-top:1px}
+.stepno{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--acc-soft);
+  color:var(--acc);font-size:12px;font-weight:700;display:grid;place-items:center;margin-top:5px}
+.ing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:2px 10px}
+footer{max-width:860px;margin:34px auto 0;padding:0 16px;font-size:12px;color:var(--mut);
+  text-align:center}
+.nospeech{display:none;max-width:860px;margin:14px auto 0;padding:10px 16px;
+  background:#fdf0d5;border:1px solid #e8d5a0;border-radius:10px;font-size:13px;color:#7a6428}
+@media (max-width:520px){
+  .dish-title ruby{font-size:19px}
+  .ing-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍱 日本料理日語教材</h1>
+  <p>每一道菜、每一句內容都附 振り仮名・羅馬拼音・中文，點 🔊 即可聽日文發音</p>
+</header>
+
+<div class="nospeech" id="noSpeech">⚠️ 你的瀏覽器不支援語音合成（Web Speech API），仍可閱讀振り仮名與羅馬拼音。</div>
+
+<div class="tools">
+  <span class="hint">點菜名展開詳細內容（簡介・材料・作法）</span>
+  <label class="tgl"><input type="checkbox" id="slowChk">🐢 慢速朗讀</label>
+</div>
+
+<main id="app"></main>
+
+<footer>教材內容：日本家庭料理 8 道｜發音由瀏覽器日文語音（ja-JP）朗讀，建議使用 Chrome / Safari / Edge</footer>
+
+<script>
+// 資料格式：j = [[漢字, 讀音], [假名部分]]，字串代表不需注音的部分
+const DISHES = [
+{
+  name:{j:[["肉","にく"],"じゃが"], r:"nikujaga", zh:"馬鈴薯燉肉"},
+  intro:{j:[["日本","にほん"],"の",["代表的","だいひょうてき"],"な",["家庭料理","かていりょうり"],"です。"],
+    r:"Nihon no daihyōteki na katei ryōri desu.", zh:"這是日本具代表性的家庭料理。"},
+  ings:[
+    {j:["じゃがいも"], r:"jagaimo", zh:"馬鈴薯"},
+    {j:[["牛肉","ぎゅうにく"]], r:"gyūniku", zh:"牛肉"},
+    {j:[["玉","たま"],"ねぎ"], r:"tamanegi", zh:"洋蔥"},
+    {j:["にんじん"], r:"ninjin", zh:"紅蘿蔔"},
+    {j:[["醤油","しょうゆ"]], r:"shōyu", zh:"醬油"}
+  ],
+  steps:[
+    {j:[["野菜","やさい"],"を",["切","き"],"ります。"], r:"Yasai o kirimasu.", zh:"把蔬菜切好。"},
+    {j:[["肉","にく"],"を",["炒","いた"],"めます。"], r:"Niku o itamemasu.", zh:"把肉炒一炒。"},
+    {j:[["水","みず"],"と",["調味料","ちょうみりょう"],"を",["入","い"],"れて",["煮","に"],"ます。"], r:"Mizu to chōmiryō o irete nimasu.", zh:"加入水和調味料燉煮。"},
+    {j:[["柔","やわ"],"らかくなったら",["完成","かんせい"],"です。"], r:"Yawarakaku nattara kansei desu.", zh:"煮到變軟就完成了。"}
+  ]
+},
+{
+  name:{j:[["味噌汁","みそしる"]], r:"misoshiru", zh:"味噌湯"},
+  intro:{j:[["毎日","まいにち"],"の",["食卓","しょくたく"],"に",["欠","か"],"かせないスープです。"],
+    r:"Mainichi no shokutaku ni kakasenai sūpu desu.", zh:"這是每天餐桌上不可缺少的湯品。"},
+  ings:[
+    {j:[["味噌","みそ"]], r:"miso", zh:"味噌"},
+    {j:[["豆腐","とうふ"]], r:"tōfu", zh:"豆腐"},
+    {j:["わかめ"], r:"wakame", zh:"海帶芽"},
+    {j:[["出汁","だし"]], r:"dashi", zh:"日式高湯"},
+    {j:["ねぎ"], r:"negi", zh:"蔥"}
+  ],
+  steps:[
+    {j:[["出汁","だし"],"を",["温","あたた"],"めます。"], r:"Dashi o atatamemasu.", zh:"把高湯加熱。"},
+    {j:[["豆腐","とうふ"],"とわかめを",["入","い"],"れます。"], r:"Tōfu to wakame o iremasu.", zh:"放入豆腐和海帶芽。"},
+    {j:[["火","ひ"],"を",["止","と"],"めて",["味噌","みそ"],"を",["溶","と"],"かします。"], r:"Hi o tomete miso o tokashimasu.", zh:"關火後把味噌溶入湯中。"},
+    {j:["ねぎを",["散","ち"],"らして",["完成","かんせい"],"です。"], r:"Negi o chirashite kansei desu.", zh:"撒上蔥花就完成了。"}
+  ]
+},
+{
+  name:{j:[["唐揚","からあ"],"げ"], r:"karaage", zh:"日式炸雞"},
+  intro:{j:[["子供","こども"],"から",["大人","おとな"],"まで",["大人気","だいにんき"],"の",["料理","りょうり"],"です。"],
+    r:"Kodomo kara otona made daininki no ryōri desu.", zh:"從小孩到大人都非常喜歡的料理。"},
+  ings:[
+    {j:[["鶏肉","とりにく"]], r:"toriniku", zh:"雞肉"},
+    {j:["にんにく"], r:"ninniku", zh:"大蒜"},
+    {j:[["生姜","しょうが"]], r:"shōga", zh:"薑"},
+    {j:[["片栗粉","かたくりこ"]], r:"katakuriko", zh:"太白粉"},
+    {j:[["油","あぶら"]], r:"abura", zh:"油"}
+  ],
+  steps:[
+    {j:[["鶏肉","とりにく"],"を",["一口大","ひとくちだい"],"に",["切","き"],"ります。"], r:"Toriniku o hitokuchidai ni kirimasu.", zh:"把雞肉切成一口大小。"},
+    {j:[["調味料","ちょうみりょう"],"に",["漬","つ"],"け",["込","こ"],"みます。"], r:"Chōmiryō ni tsukekomimasu.", zh:"放入調味料中醃漬。"},
+    {j:[["片栗粉","かたくりこ"],"をまぶします。"], r:"Katakuriko o mabushimasu.", zh:"均勻裹上太白粉。"},
+    {j:[["油","あぶら"],"でカラッと",["揚","あ"],"げます。"], r:"Abura de karatto agemasu.", zh:"用油炸到酥脆。"}
+  ]
+},
+{
+  name:{j:[["親子丼","おやこどん"]], r:"oyakodon", zh:"親子丼（雞肉滑蛋蓋飯）"},
+  intro:{j:[["鶏肉","とりにく"],"と",["卵","たまご"],"を",["使","つか"],"った",["丼物","どんぶりもの"],"です。"],
+    r:"Toriniku to tamago o tsukatta donburimono desu.", zh:"這是使用雞肉和雞蛋做的蓋飯。"},
+  ings:[
+    {j:[["鶏肉","とりにく"]], r:"toriniku", zh:"雞肉"},
+    {j:[["卵","たまご"]], r:"tamago", zh:"雞蛋"},
+    {j:[["玉","たま"],"ねぎ"], r:"tamanegi", zh:"洋蔥"},
+    {j:["ご",["飯","はん"]], r:"gohan", zh:"白飯"},
+    {j:["みりん"], r:"mirin", zh:"味醂"}
+  ],
+  steps:[
+    {j:[["玉","たま"],"ねぎと",["鶏肉","とりにく"],"を",["煮","に"],"ます。"], r:"Tamanegi to toriniku o nimasu.", zh:"把洋蔥和雞肉煮熟。"},
+    {j:[["溶","と"],"き",["卵","たまご"],"を",["回","まわ"],"し",["入","い"],"れます。"], r:"Tokitamago o mawashiiremasu.", zh:"把蛋液以繞圈方式倒入。"},
+    {j:[["半熟","はんじゅく"],"になったら",["火","ひ"],"を",["止","と"],"めます。"], r:"Hanjuku ni nattara hi o tomemasu.", zh:"蛋呈半熟狀態時關火。"},
+    {j:["ご",["飯","はん"],"の",["上","うえ"],"にのせて",["完成","かんせい"],"です。"], r:"Gohan no ue ni nosete kansei desu.", zh:"蓋在白飯上就完成了。"}
+  ]
+},
+{
+  name:{j:[["天","てん"],"ぷら"], r:"tenpura", zh:"天婦羅"},
+  intro:{j:[["海外","かいがい"],"でも",["有名","ゆうめい"],"な",["日本料理","にほんりょうり"],"です。"],
+    r:"Kaigai demo yūmei na nihon ryōri desu.", zh:"這是在海外也很有名的日本料理。"},
+  ings:[
+    {j:["エビ"], r:"ebi", zh:"蝦子"},
+    {j:["かぼちゃ"], r:"kabocha", zh:"南瓜"},
+    {j:["なす"], r:"nasu", zh:"茄子"},
+    {j:[["小麦粉","こむぎこ"]], r:"komugiko", zh:"麵粉"},
+    {j:[["天","てん"],"つゆ"], r:"tentsuyu", zh:"天婦羅沾醬"}
+  ],
+  steps:[
+    {j:[["材料","ざいりょう"],"を",["食","た"],"べやすい",["大","おお"],"きさに",["切","き"],"ります。"], r:"Zairyō o tabeyasui ōkisa ni kirimasu.", zh:"把材料切成方便入口的大小。"},
+    {j:[["衣","ころも"],"を",["作","つく"],"ります。"], r:"Koromo o tsukurimasu.", zh:"調製麵衣。"},
+    {j:[["衣","ころも"],"をつけて",["油","あぶら"],"で",["揚","あ"],"げます。"], r:"Koromo o tsukete abura de agemasu.", zh:"裹上麵衣後用油炸。"},
+    {j:[["天","てん"],"つゆにつけて",["食","た"],"べます。"], r:"Tentsuyu ni tsukete tabemasu.", zh:"沾天婦羅醬汁食用。"}
+  ]
+},
+{
+  name:{j:["カレーライス"], r:"karē raisu", zh:"咖哩飯"},
+  intro:{j:[["日本","にほん"],"の",["国民食","こくみんしょく"],"と",["言","い"],"われています。"],
+    r:"Nihon no kokuminshoku to iwarete imasu.", zh:"被稱為日本的國民美食。"},
+  ings:[
+    {j:["カレールー"], r:"karē rū", zh:"咖哩塊"},
+    {j:[["豚肉","ぶたにく"]], r:"butaniku", zh:"豬肉"},
+    {j:["じゃがいも"], r:"jagaimo", zh:"馬鈴薯"},
+    {j:["にんじん"], r:"ninjin", zh:"紅蘿蔔"},
+    {j:[["玉","たま"],"ねぎ"], r:"tamanegi", zh:"洋蔥"}
+  ],
+  steps:[
+    {j:[["肉","にく"],"と",["野菜","やさい"],"を",["炒","いた"],"めます。"], r:"Niku to yasai o itamemasu.", zh:"把肉和蔬菜炒香。"},
+    {j:[["水","みず"],"を",["加","くわ"],"えて",["煮込","にこ"],"みます。"], r:"Mizu o kuwaete nikomimasu.", zh:"加水燉煮。"},
+    {j:["ルーを",["入","い"],"れて",["溶","と"],"かします。"], r:"Rū o irete tokashimasu.", zh:"放入咖哩塊使其溶化。"},
+    {j:["ご",["飯","はん"],"にかけて",["完成","かんせい"],"です。"], r:"Gohan ni kakete kansei desu.", zh:"淋在白飯上就完成了。"}
+  ]
+},
+{
+  name:{j:["お",["好","この"],"み",["焼","や"],"き"], r:"okonomiyaki", zh:"大阪燒"},
+  intro:{j:[["大阪","おおさか"],"の",["名物料理","めいぶつりょうり"],"です。"],
+    r:"Ōsaka no meibutsu ryōri desu.", zh:"這是大阪的名產料理。"},
+  ings:[
+    {j:["キャベツ"], r:"kyabetsu", zh:"高麗菜"},
+    {j:[["小麦粉","こむぎこ"]], r:"komugiko", zh:"麵粉"},
+    {j:[["卵","たまご"]], r:"tamago", zh:"雞蛋"},
+    {j:[["豚肉","ぶたにく"]], r:"butaniku", zh:"豬肉"},
+    {j:["ソース"], r:"sōsu", zh:"大阪燒醬"}
+  ],
+  steps:[
+    {j:["キャベツを",["細","こま"],"かく",["切","き"],"ります。"], r:"Kyabetsu o komakaku kirimasu.", zh:"把高麗菜切碎。"},
+    {j:[["生地","きじ"],"を",["混","ま"],"ぜます。"], r:"Kiji o mazemasu.", zh:"把麵糊攪拌均勻。"},
+    {j:[["鉄板","てっぱん"],"で",["両面","りょうめん"],"を",["焼","や"],"きます。"], r:"Teppan de ryōmen o yakimasu.", zh:"在鐵板上把兩面煎熟。"},
+    {j:["ソースをかけて",["完成","かんせい"],"です。"], r:"Sōsu o kakete kansei desu.", zh:"淋上醬汁就完成了。"}
+  ]
+},
+{
+  name:{j:[["玉子焼","たまごや"],"き"], r:"tamagoyaki", zh:"日式煎蛋捲"},
+  intro:{j:["お",["弁当","べんとう"],"の",["定番","ていばん"],"おかずです。"],
+    r:"Obentō no teiban okazu desu.", zh:"這是便當裡的經典配菜。"},
+  ings:[
+    {j:[["卵","たまご"]], r:"tamago", zh:"雞蛋"},
+    {j:[["砂糖","さとう"]], r:"satō", zh:"砂糖"},
+    {j:[["塩","しお"]], r:"shio", zh:"鹽"},
+    {j:[["出汁","だし"]], r:"dashi", zh:"日式高湯"},
+    {j:["サラダ",["油","あぶら"]], r:"sarada abura", zh:"沙拉油"}
+  ],
+  steps:[
+    {j:[["卵","たまご"],"を",["割","わ"],"ってよく",["混","ま"],"ぜます。"], r:"Tamago o watte yoku mazemasu.", zh:"打蛋後充分攪拌。"},
+    {j:[["調味料","ちょうみりょう"],"を",["加","くわ"],"えます。"], r:"Chōmiryō o kuwaemasu.", zh:"加入調味料。"},
+    {j:[["薄","うす"],"く",["焼","や"],"いて",["巻","ま"],"きます。"], r:"Usuku yaite makimasu.", zh:"煎成薄蛋皮後捲起來。"},
+    {j:[["形","かたち"],"を",["整","ととの"],"えて",["完成","かんせい"],"です。"], r:"Katachi o totonoete kansei desu.", zh:"整理好形狀就完成了。"}
+  ]
+}
+];
+
+// ---- 工具函式 ----
+const plain = j => j.map(p => Array.isArray(p) ? p[0] : p).join("");
+const rubyHTML = j => j.map(p =>
+  Array.isArray(p) ? `<ruby>${p[0]}<rt>${p[1]}</rt></ruby>` : p
+).join("");
+
+// ---- 語音 ----
+const hasSpeech = "speechSynthesis" in window;
+if(!hasSpeech) document.getElementById("noSpeech").style.display = "block";
+let jaVoice = null;
+function pickVoice(){
+  if(!hasSpeech) return;
+  const vs = speechSynthesis.getVoices();
+  jaVoice = vs.find(v => v.lang === "ja-JP") || vs.find(v => v.lang.startsWith("ja")) || null;
+}
+if(hasSpeech){
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
+let currentBtn = null;
+function speak(text, btn){
+  if(!hasSpeech) return;
+  speechSynthesis.cancel();
+  if(currentBtn) currentBtn.classList.remove("playing");
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ja-JP";
+  if(jaVoice) u.voice = jaVoice;
+  u.rate = document.getElementById("slowChk").checked ? 0.6 : 0.9;
+  currentBtn = btn;
+  btn.classList.add("playing");
+  u.onend = u.onerror = () => btn.classList.remove("playing");
+  speechSynthesis.speak(u);
+}
+
+// ---- 畫面 ----
+function rowHTML(item, stepNo){
+  const lead = stepNo ? `<span class="stepno">${stepNo}</span>` : "";
+  return `<div class="row">${lead}
+    <button class="spk" data-say="${plain(item.j)}" title="朗讀發音">🔊</button>
+    <div class="row-main">
+      <div>${rubyHTML(item.j)}</div>
+      <div class="roma">${item.r}</div>
+      <div class="zh">${item.zh}</div>
+    </div></div>`;
+}
+
+const app = document.getElementById("app");
+app.innerHTML = DISHES.map((d, i) => `
+<section class="dish" id="dish${i}">
+  <div class="dish-head" data-toggle="${i}">
+    <span class="dish-no">${i+1}</span>
+    <div class="dish-title">
+      <div>${rubyHTML(d.name.j)}</div>
+      <div class="dish-sub"><b>${d.name.r}</b>｜${d.name.zh}</div>
+    </div>
+    <button class="spk" data-say="${plain(d.name.j)}" title="朗讀菜名">🔊</button>
+    <span class="arrow">▶</span>
+  </div>
+  <div class="dish-body">
+    <div class="sec"><span class="sec-tag intro">📖 簡介・しょうかい</span>${rowHTML(d.intro)}</div>
+    <div class="sec"><span class="sec-tag ing">🥬 材料・ざいりょう</span>
+      <div class="ing-grid">${d.ings.map(g => rowHTML(g)).join("")}</div></div>
+    <div class="sec"><span class="sec-tag step">👨‍🍳 作り方・つくりかた</span>
+      ${d.steps.map((s, n) => rowHTML(s, n+1)).join("")}</div>
+  </div>
+</section>`).join("");
+
+app.addEventListener("click", e => {
+  const spk = e.target.closest(".spk");
+  if(spk){ speak(spk.dataset.say, spk); e.stopPropagation(); return; }
+  const head = e.target.closest(".dish-head");
+  if(head) document.getElementById("dish" + head.dataset.toggle).classList.toggle("open");
+});
+</script>
+</body>
+</html>
